@@ -1,0 +1,42 @@
+local suspiciousKeywords = {
+    "remote", "spy", "sniff", "exploit", "hack", "tracker", "logger", "stealer", "inject"
+}
+
+-- Function to get the player's Hardware ID
+local function getHardwareID()
+    return game:GetService("RbxAnalyticsService"):GetClientId()
+end
+
+-- Function to get the current date and time of kick
+local function getCurrentDateTime()
+    return os.date("%Y-%m-%d %H:%M:%S") -- Returns the current date and time in YYYY-MM-DD HH:MM:SS format
+end
+
+-- Function to check for suspicious GUIs
+local function checkForSuspiciousGUI()
+    for _, gui in pairs(game.CoreGui:GetChildren()) do
+        if gui:IsA("ScreenGui") then
+            for _, keyword in ipairs(suspiciousKeywords) do
+                if gui.Name:lower():find(keyword) then
+                    -- Get the player's UserId, Hardware ID, and current date/time
+                    local player = game.Players.LocalPlayer
+                    local userId = player.UserId
+                    local hardwareID = getHardwareID()
+                    local dateTime = getCurrentDateTime()
+
+                    -- Kick the player with a custom message including their UserId, Hardware ID, and date/time
+                    game.Players.LocalPlayer:Kick(
+                        "You have been FLAGGED for exploiting! By: AutoModeration, this report will be reviewed thoroughly by our moderators soon.\n\n" ..
+                        "UserId: " .. userId .. "\nHardware ID: " .. hardwareID .. "\nDate & Time of Detection: " .. dateTime
+                    )
+                    return
+                end
+            end
+        end
+    end
+end
+
+-- Periodic check for suspicious GUIs
+while task.wait(2) do
+    checkForSuspiciousGUI()
+end
